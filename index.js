@@ -10,11 +10,20 @@ function ask(questionText) {
   });
 }
 
-let userCommand;
-let inBridge = true;
-let inventory = ["you currently have nothing in your inventory"];
-let sceneOneLocked = true;
+async function restartGame() {
+  let playAgain = await ask(
+    "\nWould you like to play again?\nPress Y to restart, or any other key to exit the game"
+  );
+  if (playAgain.toLowerCase() === "y") {
+    spaceEscape();
+  } else {
+    console.log("\nThank you for playing!\n");
+    process.exit();
+  }
+}
+//global variable declarations
 
+//class constructor for each scene
 class Scene {
   constructor(
     scene,
@@ -22,6 +31,7 @@ class Scene {
     description,
     option1,
     option2,
+    option3,
     moveableItem,
     stationaryItem
   ) {
@@ -30,6 +40,7 @@ class Scene {
     this.desc = description;
     this.option1 = option1;
     this.option2 = option2;
+    this.option3 = option3;
     this.moveableItem = moveableItem || "";
     this.stationaryItem = stationaryItem || "";
   }
@@ -40,6 +51,7 @@ class Scene {
     console.log("\nWhat would you like to do?\n");
     console.log(`1) ${this.option1}`);
     console.log(`2) ${this.option2}`);
+    console.log(`3) ${this.option3}`);
   }
 }
 
@@ -49,15 +61,28 @@ let sceneOne = new Scene(
   "\nThe bridge of the Iron Comet is in disarray.\nExposed wires spark and consoles smoke.\nYou look around and see the body of the pilot next to a desk,\na key card around his neck.\nThe alarm continues to blare it's ominous message...\n",
   "Take the key card",
   "Wait for help",
+  "Take the body for burial",
   "key card"
 );
 
-let sceneTwo = new Scene("sceneTwo", "The Bridge");
+let sceneTwo = new Scene(
+  "sceneTwo",
+  "The Bridge",
+  '\nYou put the key card around your neck\nand head to the closed door ahead. There is a small plaque\nnext to the keypad. It reads as follows...\n\n"A grandfather, two fathers and two sons went to the movie theater together\nand everyone bought one movie ticket each. How many tickets did they buy\nin total?"\nPush your answer into the keypad to continue. Choose wisely...\n',
+  "Push 3 into the keypad",
+  "Push 4 into the keypad",
+  "Push 5 into the keypad"
+);
 
-start();
+spaceEscape();
 
-async function start() {
-  //function to split userCommand string into an array
+async function spaceEscape() {
+  //variable declarations for spaceEscape
+  let userCommand;
+  let inBridge = true;
+  let inventory = ["you currently have nothing in your inventory"];
+  let sceneOneLocked = true;
+  let sceneTwoLocked = true;
 
   const welcomeMessage = `
 Welcome to Space Escape. The text based adventure 
@@ -99,8 +124,9 @@ What the heck is going on around here?...
   sceneOne.roomLooper();
   userCommand = await ask("\nChoose an option >_");
 
-  while (sceneOneLocked === true) {
+  while (sceneOneLocked) {
     if (userCommand === "1") {
+      console.log(sceneOne.moveableItem);
       inventory.pop();
       inventory.push(sceneOne.moveableItem);
       console.log(`
@@ -112,14 +138,49 @@ You picked up the ${sceneOne.moveableItem}`);
       console.log(
         "\nYou wait for help but nobody seems to come.\nThe ships engines fail and you drift aimlessly through space.\nThat is, until you hit and astroid and shatter into oblivion with\nthe ship. At least you died quickly.... GAME OVER!"
       );
+      restartGame();
+    } else if (userCommand === "3") {
+      console.log(
+        "As sad as it is to leave a comrade behind,\nhe is too heavy to carry out the door."
+      );
+    } else {
+      console.log(
+        "That is not a valid command. Please choose one of the numbered options"
+      );
+    }
+    userCommand = await ask("\nChoose an option >_");
+  }
+
+  //beginning of scene two
+  sceneTwo.roomLooper();
+  userCommand = await ask("\nChoose an option >_");
+
+  while (sceneTwoLocked) {
+    if (userCommand === "1") {
+      console.log(`
+The indicator light on the door flashes green and slides open.
+You eagerly leave this eerie scene behind and make your way into 
+the main corridor. The alarm continues to sound...
+  `);
+      sceneTwoLocked = false;
+      break;
+    } else if (userCommand === "2" || userCommand === "3") {
+      console.log(`
+The indicator light flashes red and the keypad smokes starting a small fire.
+You mash at the the numbers furiously but to no avail. It is broken beyond repair.
+You perish in the blaze of fire that ensues... GAME OVER!
+`);
       process.exit();
     } else {
-      console.log("That is not a valid command. Please choose 1 or 2.");
-      userCommand = await ask("\nChoose an option >_");
+      console.log(
+        "That is not a valid command. Please choose one of the numbered options"
+      );
     }
+    userCommand = await ask("\nChoose an option >_");
   }
   console.log("moving forward...");
 }
+
 //allows user to exit game at any
 // if (userCommand[0] === "exit") {
 //   let exitGame = await ask(
@@ -133,4 +194,4 @@ You picked up the ${sceneOne.moveableItem}`);
 
 // if (userCommand[0] === "look") {
 //   console.log(bridge.description);
-// }
+//

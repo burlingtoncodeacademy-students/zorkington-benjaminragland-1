@@ -11,6 +11,7 @@ function ask(questionText) {
   });
 }
 
+//global variable declarations
 let userCommand;
 let inventory = ["you currently have nothing in your inventory"];
 
@@ -25,7 +26,6 @@ async function restartGame() {
     process.exit();
   }
 }
-//global variable declarations
 
 //class constructor for each scene
 class Scene {
@@ -48,7 +48,7 @@ class Scene {
     this.option3 = option3;
     this.moveableItem = moveableItem || "";
     this.stationaryItem = stationaryItem || "";
-    this.roomInventory = roomInventory || undefined;
+    this.roomInventory = roomInventory || "";
   }
 
   async roomLooper() {
@@ -64,14 +64,17 @@ class Scene {
     }
   }
 
-  drop() {
-    if (userCommand === "drop") {
+  //***need to finish functionality of this function. currently does not drop or push item
+  async drop() {
+    if (inventory.includes("you currently have nothing in your inventory")) {
+      return console.log("You have nothing to drop");
+    } else {
       let count = 1;
-      console.log("What would your like to drop?");
       inventory.map(function (item) {
         console.log(`${count}) ${item}`);
         count++;
       });
+      let dropItem = await ask("What would your like to drop?");
     }
   }
 }
@@ -79,7 +82,13 @@ class Scene {
 let sceneOne = new Scene(
   "sceneOne",
   "The Bridge",
-  "\nThe bridge of the Iron Comet is in disarray.\nExposed wires spark and consoles smoke.\nYou look around and see the body of the pilot next to a desk,\na key card around his neck.\nThe alarm continues to blare it's ominous message...\n",
+  `
+The bridge of the Iron Comet is in disarray.
+Exposed wires spark and consoles smoke.You look 
+around and see the body of the pilot next to a 
+control panel, a key card around his neck. 
+The alarm continues to blare it's ominous message...
+`,
   "Take the key card",
   "Wait for help",
   "Take the body for burial",
@@ -89,10 +98,48 @@ let sceneOne = new Scene(
 let sceneTwo = new Scene(
   "sceneTwo",
   "The Bridge",
-  '\nYou put the key card around your neck\nand head to the closed door ahead. There is a small plaque\nnext to the keypad. It reads as follows...\n\n"A grandfather, two fathers and two sons went to the movie theater together\nand everyone bought one movie ticket each. How many tickets did they buy\nin total?"\nPush your answer into the keypad to continue. Choose wisely...\n',
-  "Push 3 into the keypad",
-  "Push 4 into the keypad",
-  "Push 5 into the keypad"
+  `
+You put the key card around your neck and head to the 
+closed door ahead. There is a small plaque next to the keypad. 
+It reads as follows... 
+"A grandfather, two fathers and two sons went to the movie theater together
+and everyone bought one movie ticket each. How many tickets did they buy in total?"
+Push your answer into the keypad to continue. Think well and choose wisely...
+`,
+  "Push #3 into the keypad",
+  "Push #4 into the keypad",
+  "Push #5 into the keypad"
+);
+
+let sceneThree = new Scene(
+  "sceneThree",
+  "Main Corridor",
+  `
+The main corridor appears to be vacant. Maybe everyone else that is alive has
+already escaped. You look aroud at your options. To the North lies an elevator
+that leads to the Engine Room, to the East a supply room, and to the West a 
+Mess Hall. You know the escape pods are close to the Engine room, but maybe you 
+should try to gather some supplies first. Where would you like to go?...
+  `,
+  "Go to the Elevator",
+  "Go to the Mess Hall",
+  "Go to the Supply Room"
+);
+
+let sceneFour = new Scene(
+  "sceneFour",
+  "Mess Hall",
+  `
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The Mess Hall is well, a mess. Cups and trays are strewn about and food litters
+the floor. You take a look around and wonder if there is anything useful around
+here. You are kind of hungry too and feeling a bit weak. You grapple with the 
+decision to eat for strength or too heed the urgency of finding the escape pod.
+  `,
+  "Find some food and eat to regain strength",
+  "Search for supplies that might help with your mission",
+  "Leave the Mess Hall and return to the Main Corridor"
 );
 
 spaceEscape();
@@ -104,6 +151,7 @@ async function spaceEscape() {
 
   let sceneOneLocked = true;
   let sceneTwoLocked = true;
+  let sceneThreeLocked = true;
 
   const welcomeMessage = `
 Welcome to Space Escape. The text based adventure 
@@ -140,6 +188,8 @@ as a mechanical voice repeats itself: "Warning, engine failure
 detected. Navagation offline. Please make your way to the 
 escape pod." You have no recollection of how this happened.
 What the heck is going on around here?...
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   `;
 
   console.log(intro);
@@ -153,21 +203,30 @@ What the heck is going on around here?...
       inventory.pop();
       inventory.push(sceneOne.moveableItem);
       console.log(`
-You picked up the ${sceneOne.moveableItem}`);
+"You picked up the ${sceneOne.moveableItem}"
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+`);
       sceneOneLocked = false;
       break;
     } else if (userCommand === "2") {
       sceneOneLocked = false;
       console.log(
-        "\nYou wait for help but nobody seems to come.\nThe ships engines fail and you drift aimlessly through space.\nThat is, until you hit and astroid and shatter into oblivion with\nthe ship. At least you died quickly.... GAME OVER!"
+        `
+You wait for help but nobody comes to your rescue.
+The ships engines fail and you drift aimlessly through space.
+That is, until you hit and astroid and shatter into oblivion with
+the ship. At least you died quickly.... GAME OVER!`
       );
       restartGame();
     } else if (userCommand === "3") {
       console.log(
         "As sad as it is to leave a comrade behind,\nhe is too heavy to carry out the door."
       );
-    } else if (userCommand === "drop") {
-      sceneOne.drop();
+    } else if (userCommand.toLowerCase() === "i") {
+      console.log(`
+Your current inventory is: ${inventory}
+`);
     } else {
       console.log(
         "That is not a valid command. Please choose one of the numbered options"
@@ -185,7 +244,11 @@ You picked up the ${sceneOne.moveableItem}`);
       console.log(`
 The indicator light on the door flashes green and slides open.
 You eagerly leave this eerie scene behind and make your way into 
-the main corridor. The alarm continues to sound...
+the main corridor. As the door closes behind you the key pad smokes
+and the door grinds to a halt forbidding return entry. 
+The alarm continues to sound...
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   `);
       sceneTwoLocked = false;
       break;
@@ -195,9 +258,13 @@ The indicator light flashes red and the keypad smokes starting a small fire.
 You mash at the the numbers furiously but to no avail. It is broken beyond repair.
 You perish in the blaze of fire that ensues... GAME OVER!
 `);
-      process.exit();
+      restartGame();
     } else if (userCommand === "drop") {
       sceneOne.drop();
+    } else if (userCommand.toLowerCase() === "i") {
+      console.log(`
+Your current inventory is: ${inventory}
+`);
     } else {
       console.log(
         "That is not a valid command. Please choose one of the numbered options"
@@ -205,11 +272,49 @@ You perish in the blaze of fire that ensues... GAME OVER!
     }
     userCommand = await ask("\nChoose an option >_");
   }
-  console.log("moving forward...");
+
+  sceneThree.roomLooper();
+  userCommand = await ask("\nChoose an option >_");
+
+  //beginning of sceneThree
+  while (sceneThreeLocked) {
+    if (inventory.includes("crowbar") && userCommand === "1") {
+      console.log(`
+You use what little strength you have to pry open the stuck door with the 
+crowbar. You enter the elevator and push the button to send you down the 
+shaft towards the Engine Room. The door remains ajar as you hug the back 
+wall and decend the levels of your ship. The damaged cube grinds to a halt
+slightly missing it's mark but leaving enough room for you to crawl out into
+the Basement Corridor.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+`);
+      sceneThreeLocked = false;
+      break;
+    } else if (userCommand === "1") {
+      console.log(`
+You make your way to the elevator but the door is jammed. There is a two inch
+gap, but your attempts to pry it open with your fingers are in vain. You need 
+some leverage... You head back down the Main Corridor towards the other rooms.
+`);
+    } else if (userCommand === "2") {
+      sceneFour.roomLooper();
+    } else if (userCommand === "3" && inventory.includes("glow stick")) {
+      sceneFive.roomLooper();
+    } else if (userCommand === "3") {
+      console.log(`
+You open the door the the Supply Room but it is pitch black. You reach over and
+flick the light switch on. Nothing happens... There is no way you can look for 
+supplies her without a light source. You head back to the Main Corridor.
+      `);
+    }
+
+    userCommand = await ask("\nChoose an option >_");
+  }
 }
 
 //allows user to exit game at any
-// if (userCommand[0] === "exit") {
+// if (userCommand === "exit") {
 //   let exitGame = await ask(
 //     "Are you sure you want to quit the game?\nType exit again to confirm >_"
 //   );
@@ -222,3 +327,17 @@ You perish in the blaze of fire that ensues... GAME OVER!
 // if (userCommand[0] === "look") {
 //   console.log(bridge.description);
 //
+// if (userCommand.toLowerCase === "exit") {
+//   quitGame();
+// }
+// async function quitGame() {
+//   let exitGame = await ask(
+//     "Are you sure you want to quit the game?\nType exit again to confirm >_"
+//   );
+//   if (exitGame === "exit") {
+//     console.log("Thank you for playing!");
+//     process.exit();
+//   } else {
+//     return;
+//   }
+// }

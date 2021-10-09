@@ -1,3 +1,4 @@
+const { count } = require("console");
 const readline = require("readline");
 const readlineInterface = readline.createInterface(
   process.stdin,
@@ -9,6 +10,9 @@ function ask(questionText) {
     readlineInterface.question(questionText, resolve);
   });
 }
+
+let userCommand;
+let inventory = ["you currently have nothing in your inventory"];
 
 async function restartGame() {
   let playAgain = await ask(
@@ -33,7 +37,8 @@ class Scene {
     option2,
     option3,
     moveableItem,
-    stationaryItem
+    stationaryItem,
+    roomInventory
   ) {
     this.scene = scene;
     this.location = location;
@@ -43,6 +48,7 @@ class Scene {
     this.option3 = option3;
     this.moveableItem = moveableItem || "";
     this.stationaryItem = stationaryItem || "";
+    this.roomInventory = roomInventory || undefined;
   }
 
   async roomLooper() {
@@ -52,6 +58,21 @@ class Scene {
     console.log(`1) ${this.option1}`);
     console.log(`2) ${this.option2}`);
     console.log(`3) ${this.option3}`);
+
+    if (!this.roomInventory === undefined) {
+      console.log(`4) Pick up ${this.roomInventory}`);
+    }
+  }
+
+  drop() {
+    if (userCommand === "drop") {
+      let count = 1;
+      console.log("What would your like to drop?");
+      inventory.map(function (item) {
+        console.log(`${count}) ${item}`);
+        count++;
+      });
+    }
   }
 }
 
@@ -78,9 +99,9 @@ spaceEscape();
 
 async function spaceEscape() {
   //variable declarations for spaceEscape
-  let userCommand;
+
   let inBridge = true;
-  let inventory = ["you currently have nothing in your inventory"];
+
   let sceneOneLocked = true;
   let sceneTwoLocked = true;
 
@@ -101,6 +122,8 @@ Before we begin please take note of the following:
 1) If at any point in the game you would like to quit, type "exit"
 
 2) If at any point you would like to view your current inventory, type "i"
+
+3) To drop an item from your inventory, type "drop"
 
 Thanks for reading! Happy adventuring! 
   `;
@@ -143,6 +166,8 @@ You picked up the ${sceneOne.moveableItem}`);
       console.log(
         "As sad as it is to leave a comrade behind,\nhe is too heavy to carry out the door."
       );
+    } else if (userCommand === "drop") {
+      sceneOne.drop();
     } else {
       console.log(
         "That is not a valid command. Please choose one of the numbered options"
@@ -171,6 +196,8 @@ You mash at the the numbers furiously but to no avail. It is broken beyond repai
 You perish in the blaze of fire that ensues... GAME OVER!
 `);
       process.exit();
+    } else if (userCommand === "drop") {
+      sceneOne.drop();
     } else {
       console.log(
         "That is not a valid command. Please choose one of the numbered options"

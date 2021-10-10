@@ -12,6 +12,7 @@ function ask(questionText) {
 }
 
 //global variable declarations
+const colors = require("colors");
 let userCommand;
 let inventory = ["you currently have nothing in your inventory"];
 let elevatorOpen = false;
@@ -53,12 +54,12 @@ class Scene {
   }
 
   async roomLooper() {
-    console.log(this.desc);
-    console.log(`[ You are currently in ${this.location} ]`);
+    console.log(`${this.desc}`.green);
+    console.log(`[ You are currently in ${this.location} ]`.yellow);
     console.log("\nWhat would you like to do?\n");
-    console.log(`1) ${this.option1}`);
-    console.log(`2) ${this.option2}`);
-    console.log(`3) ${this.option3}`);
+    console.log(`1) ${this.option1}`.brightBlue);
+    console.log(`2) ${this.option2}`.brightBlue);
+    console.log(`3) ${this.option3}`.brightBlue);
 
     if (!this.roomInventory === undefined) {
       console.log(`4) Pick up ${this.roomInventory}`);
@@ -156,9 +157,9 @@ casts a glow across the room. There is a lot less in here than you thought. Most
 large jugs of water and a crow bar leaning in the corner of the room...
   `,
   "Take the jug of water",
-  "Take the crow bar",
+  "Take the crowbar",
   "Leave and head back to the Main Corridor",
-  "crow bar",
+  "crowbar",
   "jug of water"
 );
 
@@ -181,7 +182,7 @@ game which only ends two ways... You escaping your
 beloved but damaged ship, or succumbing to an untimely 
 death in the cold void of space... Good luck! 
 
-  `;
+  `.green;
 
   console.log(welcomeMessage);
   let answer = await ask("Press any key to continue >_");
@@ -196,7 +197,7 @@ Before we begin please take note of the following:
 3) To drop an item from your inventory, type "drop"
 
 Thanks for reading! Happy adventuring! 
-  `;
+  `.yellow;
 
   console.log(rules);
 
@@ -212,7 +213,7 @@ escape pod." You have no recollection of how this happened.
 What the heck is going on around here?...
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  `;
+  `.green;
 
   console.log(intro);
 
@@ -223,11 +224,13 @@ What the heck is going on around here?...
     if (userCommand === "1") {
       inventory.pop();
       inventory.push(sceneOne.moveableItem);
-      console.log(`
-"You picked up the ${sceneOne.moveableItem}"
+      console.log(
+        `
+[ "You picked up the ${sceneOne.moveableItem}" ]
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-`);
+`.yellow
+      );
       sceneOneLocked = false;
       break;
     } else if (userCommand === "2") {
@@ -237,12 +240,13 @@ What the heck is going on around here?...
 You wait for help but nobody comes to your rescue.
 The ships engines fail and you drift aimlessly through space.
 That is, until you hit and astroid and shatter into oblivion with
-the ship. At least you died quickly.... GAME OVER!`
+the ship. At least you died quickly.... GAME OVER!`.red
       );
       restartGame();
     } else if (userCommand === "3") {
       console.log(
-        "As sad as it is to leave a comrade behind,\nhe is too heavy to carry out the door."
+        "\nAs sad as it is to leave a comrade behind,\nhe is too heavy to carry out the door."
+          .yellow
       );
     } else if (userCommand.toLowerCase() === "i") {
       console.log(`
@@ -262,7 +266,8 @@ Your current inventory is: ${inventory}
 
   while (sceneTwoLocked) {
     if (userCommand === "1") {
-      console.log(`
+      console.log(
+        `
 The indicator light on the door flashes green and slides open.
 You eagerly leave this eerie scene behind and make your way into 
 the main corridor. As the door closes behind you the key pad smokes
@@ -270,22 +275,27 @@ and the door grinds to a halt forbidding return entry.
 The alarm continues to sound...
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  `);
+  `.green
+      );
       sceneTwoLocked = false;
       mainCorridorLoop();
     } else if (userCommand === "2" || userCommand === "3") {
-      console.log(`
+      console.log(
+        `
 The indicator light flashes red and the keypad smokes starting a small fire.
 You mash at the the numbers furiously but to no avail. It is broken beyond repair.
 You perish in the blaze of fire that ensues... GAME OVER!
-`);
+`.red
+      );
       restartGame();
     } else if (userCommand === "drop") {
       sceneOne.drop();
     } else if (userCommand.toLowerCase() === "i") {
-      console.log(`
-Your current inventory is: ${inventory}
-`);
+      console.log(
+        `
+[ Your current inventory is: ${inventory} ]
+`.brightRed
+      );
     } else {
       console.log(
         "That is not a valid command. Please choose one of the numbered options"
@@ -302,12 +312,25 @@ Your current inventory is: ${inventory}
       elevatorLoop();
     } else if (userCommand === "2") {
       messHallLoop();
-    } else if (userCommand === "3") {
+    } else if (userCommand === "3" && inventory.includes("glow stick")) {
       supplyRoomLoop();
+    } else if (userCommand === "3") {
+      console.log(
+        `
+You open the door the the Supply Room but it is pitch black. You reach over and 
+flick the light switch on. Nothing happens... There is no way you can look for  
+supplies her without a light source. You head back to the Main Corridor. 
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+`.green
+      );
+      mainCorridorLoop();
     } else if (userCommand.toLowerCase() === "i") {
-      console.log(`
-Your current inventory is: ${inventory}
-`);
+      console.log(
+        `
+[ Your current inventory is: ${inventory} ]
+`.brightRed
+      );
     } else {
       console.log(
         "That is not a valid command. Please choose one of the numbered options"
@@ -321,7 +344,8 @@ Your current inventory is: ${inventory}
     sceneThreeLocked = true;
     while (sceneThreeLocked) {
       if (inventory.includes("crowbar") && userCommand === "1") {
-        console.log(`
+        console.log(
+          `
 You use what little strength you have to pry open the stuck door with the 
 crowbar. You enter the elevator and push the button to send you down the 
 shaft towards the Engine Room. The door remains ajar as you hug the back 
@@ -330,17 +354,20 @@ slightly missing it's mark but leaving enough room for you to crawl out into
 the Basement Corridor.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-`);
+`.green
+        );
         sceneThreeLocked = false;
         break;
       } else if (userCommand === "1")
-        console.log(`
+        console.log(
+          `
 You make your way to the elevator but the door is jammed. There is a two inch
 gap, but your attempts to pry it open with your fingers are in vain. You need 
 some leverage... You head back down the Main Corridor towards the other rooms.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-`);
+`.green
+        );
       sceneThreeLocked = false;
       mainCorridorLoop();
     }
@@ -353,13 +380,15 @@ some leverage... You head back down the Main Corridor towards the other rooms.
     userCommand = await ask("\nChoose an option >_");
     while (sceneFourLocked) {
       if (userCommand === "1") {
-        console.log(`
+        console.log(
+          `
 You grab the sandwich and it's still in pretty good shape! You ignore the alarm's warnings and 
 continue to eat. Your ravenous appetite is not satisfied and you continue to look for more 
 satisfying sources of food. You loose track of time, the engines of the Iron Comet fail completely
 and you plunge into a large piece of space debree. The wall of the Mess Hall is breeched and you are 
 sucked into the vaccum of space! GAME OVER!!!
-      `);
+`.red
+        );
         restartGame();
         break;
       } else if (userCommand === "2") {
@@ -368,17 +397,21 @@ Unsure if all this was worth your time, you take the glow stick and head back in
 But not before grabbing that sandwich.
       `);
         inventory.push(sceneFour.moveableItem);
-        console.log(`
-"You picked up the ${sceneFour.moveableItem}"
+        console.log(
+          `
+[ "You picked up the ${sceneFour.moveableItem}" ]
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-`);
+`.yellow
+        );
         sceneFourLocked = false;
         mainCorridorLoop();
       } else if (userCommand.toLowerCase() === "i") {
-        console.log(`
-Your current inventory is: ${inventory}
-`);
+        console.log(
+          `
+[ Your current inventory is: ${inventory} ]
+`.brightRed
+        );
       } else {
         console.log(
           "That is not a valid command. Please choose one of the numbered options"
@@ -396,29 +429,40 @@ Your current inventory is: ${inventory}
 
     while (sceneFiveLocked) {
       if (userCommand === "1") {
-        console.log(`
-Did I mention that these "jugs" of water were in 50 gallon drums? There is no way this is coming
-with you. You leave it behind.
-        `);
+        console.log(
+          `
+Did I mention that these "jugs" of water were in 50 gallon drums? There is no way 
+this is coming with you. You leave it behind.
+`.yellow
+        );
       } else if (userCommand === "2") {
-        console.log(`
+        console.log(
+          `
 You grab the crowbar. It's cool steel feels good in the hand. You hope it will come in handy down 
 the road. It's on the larger side of the crowbar range and is actually pretty heavy. You head back
 to the Main Corridor.       
-`);
+`.green
+        );
         inventory.push(sceneFive.moveableItem);
-        console.log(`
-"You picked up the ${sceneFive.moveableItem}"
+        console.log(
+          `
+[ "You picked up the ${sceneFive.moveableItem}" ]
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-`);
+`.yellow
+        );
         sceneFiveLocked = false;
         mainCorridorLoop();
       } else if (userCommand.toLowerCase() === "i") {
         console.log(`
 Your current inventory is: ${inventory}
 `);
+      } else {
+        console.log(
+          "That is not a valid command. Please choose one of the numbered options"
+        );
       }
+      userCommand = await ask("\nChoose an option >_");
     }
   }
 }

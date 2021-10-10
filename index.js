@@ -18,8 +18,9 @@ let inventory = ["you currently have nothing in your inventory"];
 let elevatorOpen = false;
 
 async function restartGame() {
+  console.log("\nWould you like to play again?\n".cyan);
   let playAgain = await ask(
-    "\nWould you like to play again?\nPress Y to restart, or any other key to exit the game >_"
+    "Press Y to restart, or any other key to exit the game >_".grey.bold
   );
   if (playAgain.toLowerCase() === "y") {
     spaceEscape();
@@ -55,8 +56,8 @@ class Scene {
 
   async roomLooper() {
     console.log(`${this.desc}`.green);
-    console.log(`[ You are currently in ${this.location} ]`.yellow);
-    console.log("\nWhat would you like to do?\n");
+    console.log(`[ You are currently in ${this.location} ]`.yellow.bold);
+    console.log("\nWhat would you like to do?\n".cyan);
     console.log(`1) ${this.option1}`.brightBlue);
     console.log(`2) ${this.option2}`.brightBlue);
     console.log(`3) ${this.option3}`.brightBlue);
@@ -81,7 +82,7 @@ class Scene {
   }
 }
 
-//declarations of the children of Scene class.
+//declarations of the children of Scene class. Each numbered scene is a different section in the progression of the story
 let sceneOne = new Scene(
   "sceneOne",
   "The Bridge",
@@ -172,7 +173,23 @@ room. As you stand there sweating from the intense heat, you contemplate whether
 you can fix the engine. You would hate to leave your beloved ship behind...
   `,
   "See if you can fix the ship's engine",
-  "Continue towards the escape pod"
+  "Continue towards the escape pod",
+  "Take the engine with you to the pod for repair"
+);
+
+let sceneSeven = new Scene(
+  "sceneSeven",
+  "Escape Pod",
+  `
+Whoever built the Iron Comet sure thought that riddles were a solid safety feature for 
+door locks and lauch mechainisms. Once again you find yourself one answer away from 
+freedom or death. The riddle reads as follows...
+A duck was given $9, a spider was given $36, a bee was given $27. Based off of this 
+information, how much money would be given to a cat? Choose your answer wisely...
+  `,
+  "You think the answer is $16",
+  "You think the answe is $24",
+  "You think the answer is $18"
 );
 
 spaceEscape();
@@ -188,6 +205,8 @@ async function spaceEscape() {
   let sceneFourLocked = true;
   let sceneFiveLocked = true;
   let sceneSixLocked = true;
+  let inMainCorridor = true;
+  let sceneSevenLocked = true;
 
   const welcomeMessage = `
 Welcome to Space Escape. The text based adventure 
@@ -198,7 +217,7 @@ death in the cold void of space... Good luck!
   `.green;
 
   console.log(welcomeMessage);
-  let answer = await ask("Press any key to continue >_");
+  let answer = await ask("Press any key to continue >_".grey.bold);
 
   const rules = `
 Before we begin please take note of the following:
@@ -214,7 +233,7 @@ Thanks for reading! Happy adventuring!
 
   console.log(rules);
 
-  answer = await ask("Press any key to continue >_");
+  answer = await ask("Press any key to continue >_".grey.bold);
 
   const intro = `
 You awake in a daze, head pounding and body aching. Through 
@@ -231,7 +250,7 @@ What the heck is going on around here?...
   console.log(intro);
 
   sceneOne.roomLooper();
-  userCommand = await ask("\nChoose an option >_");
+  userCommand = await ask("\nChoose an option >_".grey.bold);
 
   while (sceneOneLocked) {
     if (userCommand === "1") {
@@ -267,15 +286,16 @@ Your current inventory is: ${inventory}
 `);
     } else {
       console.log(
-        "That is not a valid command. Please choose one of the numbered options"
+        "\nThat is not a valid command. Please choose one of the numbered options"
+          .red
       );
     }
-    userCommand = await ask("\nChoose an option >_");
+    userCommand = await ask("\nChoose an option >_".grey.bold);
   }
 
   //beginning of scene two
   sceneTwo.roomLooper();
-  userCommand = await ask("\nChoose an option >_");
+  userCommand = await ask("\nChoose an option >_".grey.bold);
 
   while (sceneTwoLocked) {
     if (userCommand === "1") {
@@ -311,47 +331,52 @@ You perish in the blaze of fire that ensues... GAME OVER!
       );
     } else {
       console.log(
-        "That is not a valid command. Please choose one of the numbered options"
+        "\nThat is not a valid command. Please choose one of the numbered options"
+          .red
       );
     }
-    userCommand = await ask("\nChoose an option >_");
+    userCommand = await ask("\nChoose an option >_".grey.bold);
   }
 
   //loop to keep player in the main corridor and adjoining rooms until they go down the elevator
   async function mainCorridorLoop() {
+    inMainCorridor = true;
     sceneThree.roomLooper();
-    userCommand = await ask("\nChoose an option >_");
-    if (userCommand === "1") {
-      elevatorLoop();
-    } else if (userCommand === "2") {
-      messHallLoop();
-    } else if (userCommand === "3" && inventory.includes("glow stick")) {
-      supplyRoomLoop();
-    } else if (userCommand === "3") {
-      console.log(
-        `
+    userCommand = await ask("\nChoose an option >_".grey.bold);
+
+    while (inMainCorridor === true) {
+      if (userCommand === "1") {
+        elevatorLoop();
+      } else if (userCommand === "2") {
+        messHallLoop();
+      } else if (userCommand === "3" && inventory.includes("glow stick")) {
+        supplyRoomLoop();
+      } else if (userCommand === "3") {
+        console.log(
+          `
 You open the door the the Supply Room but it is pitch black. You reach over and 
 flick the light switch on. Nothing happens... There is no way you can look for  
 supplies her without a light source. You head back to the Main Corridor. 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 `.yellow
-      );
-      mainCorridorLoop();
-    } else if (userCommand.toLowerCase() === "i") {
-      console.log(
-        `
+        );
+        mainCorridorLoop();
+      } else if (userCommand.toLowerCase() === "i") {
+        console.log(
+          `
 [ Your current inventory is: ${inventory} ]
 `.brightRed
-      );
-    } else {
-      console.log(
-        "That is not a valid command. Please choose one of the numbered options"
-      );
+        );
+      } else {
+        console.log(
+          "\nThat is not a valid command. Please choose one of the numbered options"
+            .red
+        );
+      }
+      userCommand = await ask("\nChoose an option >_".grey.bold);
     }
-    userCommand = await ask("\nChoose an option >_");
   }
-
   //function determining whether player has credentials to enter elevator or not
   async function elevatorLoop() {
     sceneThreeLocked = true;
@@ -371,7 +396,7 @@ the Engine Room. Guess you're stuck down here now...
         );
         sceneThreeLocked = false;
         engineRoomLoop();
-      } else if (userCommand === "1")
+      } else if (!inventory.includes("crowbar" && userCommand === "1")) {
         console.log(
           `
 You make your way to the elevator but the door is jammed. There is a two inch
@@ -381,8 +406,9 @@ some leverage... You head back down the Main Corridor towards the other rooms.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 `.yellow
         );
-      sceneThreeLocked = false;
-      mainCorridorLoop();
+        sceneThreeLocked = false;
+        mainCorridorLoop();
+      }
     }
   }
 
@@ -390,7 +416,7 @@ some leverage... You head back down the Main Corridor towards the other rooms.
   async function messHallLoop() {
     sceneFourLocked = true;
     sceneFour.roomLooper();
-    userCommand = await ask("\nChoose an option >_");
+    userCommand = await ask("\nChoose an option >_".grey.bold);
     while (sceneFourLocked) {
       if (userCommand === "1") {
         console.log(
@@ -432,10 +458,11 @@ But not before grabbing that sandwich...
         mainCorridorLoop();
       } else {
         console.log(
-          "That is not a valid command. Please choose one of the numbered options"
+          "\nThat is not a valid command. Please choose one of the numbered options"
+            .red
         );
       }
-      userCommand = await ask("\nChoose an option >_");
+      userCommand = await ask("\nChoose an option >_".grey.bold);
     }
   }
 
@@ -443,7 +470,7 @@ But not before grabbing that sandwich...
   async function supplyRoomLoop() {
     sceneFiveLocked = true;
     sceneFive.roomLooper();
-    userCommand = await ask("\nChoose an option >_");
+    userCommand = await ask("\nChoose an option >_".grey.bold);
 
     while (sceneFiveLocked) {
       if (userCommand === "1") {
@@ -482,10 +509,11 @@ Your current inventory is: ${inventory}
         mainCorridorLoop();
       } else {
         console.log(
-          "That is not a valid command. Please choose one of the numbered options"
+          "\nThat is not a valid command. Please choose one of the numbered options"
+            .red
         );
       }
-      userCommand = await ask("\nChoose an option >_");
+      userCommand = await ask("\nChoose an option >_".grey.bold);
     }
   }
 
@@ -493,7 +521,7 @@ Your current inventory is: ${inventory}
   async function engineRoomLoop() {
     sceneSixLocked = true;
     sceneSix.roomLooper();
-    userCommand = await ask("\nChoose an option >_");
+    userCommand = await ask("\nChoose an option >_".grey.bold);
 
     while (sceneSixLocked) {
       if (userCommand === "1") {
@@ -508,13 +536,15 @@ Iron Comet! GAME OVER!!!
         );
         restartGame();
       } else if (userCommand === "2") {
-        console.log(`
+        console.log(
+          `
 You make your way out of the Engine Room towards the airlock that leads to the 
 escape pods. You are glad you grabbed the key card off of the pilot's neck as 
 it is the only way to continue on. You swipe the card and enter the airlock...
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        `);
+`.yellow
+        );
         sceneSixLocked = false;
         escapePodLoop();
       } else if (userCommand.toLowerCase() === "i") {
@@ -524,14 +554,67 @@ Your current inventory is: ${inventory}
 `.brightRed
         );
       } else if (userCommand === "3") {
-        sceneFourLocked = false;
-        mainCorridorLoop();
+        console.log(
+          `
+Seriously?!?!? Why on Earth, or in Space, would you think you could fit a 
+Matter-Antimatter Warp Drive into your escape pod?!? Much less lift it!
+You feel silly as you scrap that idea...       
+`.yellow
+        );
       } else {
         console.log(
-          "That is not a valid command. Please choose one of the numbered options"
+          "\nThat is not a valid command. Please choose one of the numbered options"
+            .red
         );
       }
-      userCommand = await ask("\nChoose an option >_");
+      userCommand = await ask("\nChoose an option >_".grey.bold);
+    }
+  }
+
+  console.log(
+    `
+The airlock closes behind you as you finally make your way into the Escape Pod.
+You strap yourself into the seat and prepare the pod for launch. With your 
+navagation locked onto your home planet, you are now ready to embark...
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  `.yellow
+  );
+  async function escapePodLoop() {
+    sceneSevenLocked = true;
+    sceneSeven.roomLooper();
+    userCommand = await ask("\nChoose an option >_".grey.bold);
+
+    while (sceneSevenLocked) {
+      if (userCommand === "1" || userCommand === "2") {
+        console.log(
+          `
+You think hard about the riddle, make your choice, punch it into the keypad, and press
+the launch button. An ear deafening buzzer sounds and a voice comes over the intercom:
+"Invalid credentials for launch detected. Self destruct sequence initiated 10...9...". 
+You bang on the exit as the voice continues to countdown to zero. The explosion that 
+obliterates you and the pod is quick and painless. A shame you made it this far only to
+be killed by a riddle... GAME OVER!!!
+`.red
+        );
+        restartGame();
+      } else if (userCommand === "3") {
+        console.log(
+          `
+You think hard about the riddle, make your choice, punch it into the keypad, and press
+the launch button. The launce sequence initiates and you rumble away from the ship 
+towards your home planet. You have strong emotions about the loss of your trusty ship,
+but are truly relieved to be alive. You Win!!! Thank you for playing Space Escape!
+`.magenta
+        );
+        restartGame();
+      } else {
+        console.log(
+          "\nThat is not a valid command. Please choose one of the numbered options"
+            .red
+        );
+      }
+      userCommand = await ask("\nChoose an option >_".grey.bold);
     }
   }
 }

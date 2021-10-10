@@ -133,8 +133,6 @@ let sceneFour = new Scene(
   "sceneFour",
   "Mess Hall",
   `
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 The Mess Hall is well, a mess. Cups and trays are strewn about and food litters
 the floor. You take a look around and wonder if there is anything useful around
 here. You are very hungry and are feeling quite weak. You see a pretty nice sandwich
@@ -163,6 +161,20 @@ large jugs of water and a crow bar leaning in the corner of the room...
   "jug of water"
 );
 
+let sceneSix = new Scene(
+  "sceneSix",
+  "Engine Room",
+  `
+You stand in the Engine Room excited to be getting closer to the escape pod. 
+The continued flashing of the red lights and the repeated warnings over the loudspeakers
+are starting to wear on your nerves. The escape pod is through a door at the end of the 
+room. As you stand there sweating from the intense heat, you contemplate whether or not 
+you can fix the engine. You would hate to leave your beloved ship behind...
+  `,
+  "See if you can fix the ship's engine",
+  "Continue towards the escape pod"
+);
+
 spaceEscape();
 
 async function spaceEscape() {
@@ -175,6 +187,7 @@ async function spaceEscape() {
   let sceneThreeLocked = true;
   let sceneFourLocked = true;
   let sceneFiveLocked = true;
+  let sceneSixLocked = true;
 
   const welcomeMessage = `
 Welcome to Space Escape. The text based adventure 
@@ -197,7 +210,7 @@ Before we begin please take note of the following:
 3) To drop an item from your inventory, type "drop"
 
 Thanks for reading! Happy adventuring! 
-  `.yellow;
+  `.brightBlue;
 
   console.log(rules);
 
@@ -212,8 +225,8 @@ detected. Navagation offline. Please make your way to the
 escape pod." You have no recollection of how this happened.
 What the heck is going on around here?...
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  `.green;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  `.yellow;
 
   console.log(intro);
 
@@ -228,7 +241,7 @@ What the heck is going on around here?...
         `
 [ "You picked up the ${sceneOne.moveableItem}" ]
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 `.yellow
       );
       sceneOneLocked = false;
@@ -274,8 +287,8 @@ the main corridor. As the door closes behind you the key pad smokes
 and the door grinds to a halt forbidding return entry. 
 The alarm continues to sound...
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  `.green
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  `.yellow
       );
       sceneTwoLocked = false;
       mainCorridorLoop();
@@ -321,8 +334,8 @@ You open the door the the Supply Room but it is pitch black. You reach over and
 flick the light switch on. Nothing happens... There is no way you can look for  
 supplies her without a light source. You head back to the Main Corridor. 
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-`.green
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+`.yellow
       );
       mainCorridorLoop();
     } else if (userCommand.toLowerCase() === "i") {
@@ -351,13 +364,13 @@ crowbar. You enter the elevator and push the button to send you down the
 shaft towards the Engine Room. The door remains ajar as you hug the back 
 wall and decend the levels of your ship. The damaged cube grinds to a halt
 slightly missing it's mark but leaving enough room for you to crawl out into
-the Basement Corridor.
+the Engine Room. Guess you're stuck down here now...
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-`.green
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+`.yellow
         );
         sceneThreeLocked = false;
-        break;
+        engineRoomLoop();
       } else if (userCommand === "1")
         console.log(
           `
@@ -365,8 +378,8 @@ You make your way to the elevator but the door is jammed. There is a two inch
 gap, but your attempts to pry it open with your fingers are in vain. You need 
 some leverage... You head back down the Main Corridor towards the other rooms.
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-`.green
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+`.yellow
         );
       sceneThreeLocked = false;
       mainCorridorLoop();
@@ -392,16 +405,18 @@ sucked into the vaccum of space! GAME OVER!!!
         restartGame();
         break;
       } else if (userCommand === "2") {
-        console.log(`
+        console.log(
+          `
 Unsure if all this was worth your time, you take the glow stick and head back into the Main Corridor.
-But not before grabbing that sandwich.
-      `);
+But not before grabbing that sandwich...
+`.yellow
+        );
         inventory.push(sceneFour.moveableItem);
         console.log(
           `
 [ "You picked up the ${sceneFour.moveableItem}" ]
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 `.yellow
         );
         sceneFourLocked = false;
@@ -412,6 +427,9 @@ But not before grabbing that sandwich.
 [ Your current inventory is: ${inventory} ]
 `.brightRed
         );
+      } else if (userCommand === "3") {
+        sceneFourLocked = false;
+        mainCorridorLoop();
       } else {
         console.log(
           "That is not a valid command. Please choose one of the numbered options"
@@ -448,15 +466,66 @@ to the Main Corridor.
           `
 [ "You picked up the ${sceneFive.moveableItem}" ]
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 `.yellow
         );
         sceneFiveLocked = false;
         mainCorridorLoop();
       } else if (userCommand.toLowerCase() === "i") {
-        console.log(`
+        console.log(
+          `
 Your current inventory is: ${inventory}
-`);
+`.brightRed
+        );
+      } else if (userCommand === "3") {
+        sceneFourLocked = false;
+        mainCorridorLoop();
+      } else {
+        console.log(
+          "That is not a valid command. Please choose one of the numbered options"
+        );
+      }
+      userCommand = await ask("\nChoose an option >_");
+    }
+  }
+
+  //function giving player option to fix engine or move further towards the escape pod
+  async function engineRoomLoop() {
+    sceneSixLocked = true;
+    sceneSix.roomLooper();
+    userCommand = await ask("\nChoose an option >_");
+
+    while (sceneSixLocked) {
+      if (userCommand === "1") {
+        console.log(
+          `
+Overcome with the guilt of leaving the Iron Comet behind to become another piece of 
+space junk you attempt to fix the engine. This is a foolish attempt as you know 
+absolutely nothing about Matter-Antimatter Warp Drives! Your reckeless wrenching 
+causes a complete failure resulting in an explosion that kills both you and the 
+Iron Comet! GAME OVER!!!
+        `.red
+        );
+        restartGame();
+      } else if (userCommand === "2") {
+        console.log(`
+You make your way out of the Engine Room towards the airlock that leads to the 
+escape pods. You are glad you grabbed the key card off of the pilot's neck as 
+it is the only way to continue on. You swipe the card and enter the airlock...
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        `);
+        sceneSixLocked = false;
+        escapePodLoop();
+      } else if (userCommand.toLowerCase() === "i") {
+        console.log(
+          `
+Your current inventory is: ${inventory}
+`.brightRed
+        );
+      } else if (userCommand === "3") {
+        sceneFourLocked = false;
+        mainCorridorLoop();
       } else {
         console.log(
           "That is not a valid command. Please choose one of the numbered options"

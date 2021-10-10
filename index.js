@@ -30,6 +30,11 @@ async function restartGame() {
   }
 }
 
+function quitGame() {
+  console.log("\nThank you for playing!\n".green);
+  process.exit();
+}
+
 //class constructor for each scene
 class Scene {
   constructor(
@@ -284,6 +289,8 @@ the ship. At least you died quickly.... GAME OVER!`.red
       console.log(`
 Your current inventory is: ${inventory}
 `);
+    } else if (userCommand.toLowerCase() === "exit") {
+      quitGame();
     } else {
       console.log(
         "\nThat is not a valid command. Please choose one of the numbered options"
@@ -329,6 +336,8 @@ You perish in the blaze of fire that ensues... GAME OVER!
 [ Your current inventory is: ${inventory} ]
 `.brightRed
       );
+    } else if (userCommand.toLowerCase() === "exit") {
+      quitGame();
     } else {
       console.log(
         "\nThat is not a valid command. Please choose one of the numbered options"
@@ -368,6 +377,8 @@ supplies her without a light source. You head back to the Main Corridor.
 [ Your current inventory is: ${inventory} ]
 `.brightRed
         );
+      } else if (userCommand.toLowerCase() === "exit") {
+        quitGame();
       } else {
         console.log(
           "\nThat is not a valid command. Please choose one of the numbered options"
@@ -456,6 +467,8 @@ But not before grabbing that sandwich...
       } else if (userCommand === "3") {
         sceneFourLocked = false;
         mainCorridorLoop();
+      } else if (userCommand.toLowerCase() === "exit") {
+        quitGame();
       } else {
         console.log(
           "\nThat is not a valid command. Please choose one of the numbered options"
@@ -507,6 +520,8 @@ Your current inventory is: ${inventory}
       } else if (userCommand === "3") {
         sceneFourLocked = false;
         mainCorridorLoop();
+      } else if (userCommand.toLowerCase() === "exit") {
+        quitGame();
       } else {
         console.log(
           "\nThat is not a valid command. Please choose one of the numbered options"
@@ -561,6 +576,8 @@ Matter-Antimatter Warp Drive into your escape pod?!? Much less lift it!
 You feel silly as you scrap that idea...       
 `.yellow
         );
+      } else if (userCommand.toLowerCase() === "exit") {
+        quitGame();
       } else {
         console.log(
           "\nThat is not a valid command. Please choose one of the numbered options"
@@ -608,6 +625,8 @@ but are truly relieved to be alive. You Win!!! Thank you for playing Space Escap
 `.magenta
         );
         restartGame();
+      } else if (userCommand.toLowerCase() === "exit") {
+        quitGame();
       } else {
         console.log(
           "\nThat is not a valid command. Please choose one of the numbered options"
@@ -618,43 +637,3 @@ but are truly relieved to be alive. You Win!!! Thank you for playing Space Escap
     }
   }
 }
-//     } else if (userCommand === "2") {
-//       sceneFour.roomLooper();
-//     } else if (userCommand === "3" && inventory.includes("glow stick")) {
-//       sceneFive.roomLooper();
-//     } else if (userCommand === "3") {
-//       console.log(`
-// You open the door the the Supply Room but it is pitch black. You reach over and
-// flick the light switch on. Nothing happens... There is no way you can look for
-// supplies her without a light source. You head back to the Main Corridor.
-//       `);
-//     }
-
-//allows user to exit game at any
-// if (userCommand === "exit") {
-//   let exitGame = await ask(
-//     "Are you sure you want to quit the game?\nType exit again to confirm >_"
-//   );
-//   if (exitGame === "exit") {
-//     console.log("Thank you for playing!");
-//     process.exit();
-//   }
-// }
-
-// if (userCommand[0] === "look") {
-//   console.log(bridge.description);
-//
-// if (userCommand.toLowerCase === "exit") {
-//   quitGame();
-// }
-// async function quitGame() {
-//   let exitGame = await ask(
-//     "Are you sure you want to quit the game?\nType exit again to confirm >_"
-//   );
-//   if (exitGame === "exit") {
-//     console.log("Thank you for playing!");
-//     process.exit();
-//   } else {
-//     return;
-//   }
-// }

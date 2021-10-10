@@ -14,10 +14,11 @@ function ask(questionText) {
 //global variable declarations
 let userCommand;
 let inventory = ["you currently have nothing in your inventory"];
+let elevatorOpen = false;
 
 async function restartGame() {
   let playAgain = await ask(
-    "\nWould you like to play again?\nPress Y to restart, or any other key to exit the game"
+    "\nWould you like to play again?\nPress Y to restart, or any other key to exit the game >_"
   );
   if (playAgain.toLowerCase() === "y") {
     spaceEscape();
@@ -97,7 +98,7 @@ The alarm continues to blare it's ominous message...
 
 let sceneTwo = new Scene(
   "sceneTwo",
-  "The Bridge",
+  "The Bridge Exit",
   `
 You put the key card around your neck and head to the 
 closed door ahead. There is a small plaque next to the keypad. 
@@ -134,12 +135,14 @@ let sceneFour = new Scene(
 
 The Mess Hall is well, a mess. Cups and trays are strewn about and food litters
 the floor. You take a look around and wonder if there is anything useful around
-here. You are kind of hungry too and feeling a bit weak. You grapple with the 
-decision to eat for strength or too heed the urgency of finding the escape pod.
+here. You are very hungry and are feeling quite weak. You see a pretty nice sandwich
+across the way and a lowly glow stick randomly on the ground. You grapple with the 
+decision to eat for strength or to heed the urgency of finding the escape pod.
   `,
-  "Find some food and eat to regain strength",
-  "Search for supplies that might help with your mission",
-  "Leave the Mess Hall and return to the Main Corridor"
+  "Grab some food and eat to regain strength",
+  "Take the glow stick and continue towards the escape pod",
+  "Leave the Mess Hall and return to the Main Corridor",
+  "glow stick"
 );
 
 spaceEscape();
@@ -152,6 +155,7 @@ async function spaceEscape() {
   let sceneOneLocked = true;
   let sceneTwoLocked = true;
   let sceneThreeLocked = true;
+  let sceneFourLocked = true;
 
   const welcomeMessage = `
 Welcome to Space Escape. The text based adventure 
@@ -199,7 +203,6 @@ What the heck is going on around here?...
 
   while (sceneOneLocked) {
     if (userCommand === "1") {
-      console.log(sceneOne.moveableItem);
       inventory.pop();
       inventory.push(sceneOne.moveableItem);
       console.log(`
@@ -251,7 +254,7 @@ The alarm continues to sound...
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   `);
       sceneTwoLocked = false;
-      break;
+      mainCorridorLoop();
     } else if (userCommand === "2" || userCommand === "3") {
       console.log(`
 The indicator light flashes red and the keypad smokes starting a small fire.
@@ -273,13 +276,23 @@ Your current inventory is: ${inventory}
     userCommand = await ask("\nChoose an option >_");
   }
 
-  sceneThree.roomLooper();
-  userCommand = await ask("\nChoose an option >_");
+  //loop to keep player in the main corridor and adjoining rooms until they go down the elevator
+  async function mainCorridorLoop() {
+    sceneThree.roomLooper();
+    userCommand = await ask("\nChoose an option >_");
+    if (userCommand === "1") {
+      elevatorLoop();
+    } else if (userCommand === "2") {
+      messHallLoop();
+    }
+  }
 
-  //beginning of sceneThree
-  while (sceneThreeLocked) {
-    if (inventory.includes("crowbar") && userCommand === "1") {
-      console.log(`
+  //function determining whether player has credentials to enter elevator or not
+  async function elevatorLoop() {
+    sceneThreeLocked = true;
+    while (sceneThreeLocked) {
+      if (inventory.includes("crowbar") && userCommand === "1") {
+        console.log(`
 You use what little strength you have to pry open the stuck door with the 
 crowbar. You enter the elevator and push the button to send you down the 
 shaft towards the Engine Room. The door remains ajar as you hug the back 
@@ -289,29 +302,65 @@ the Basement Corridor.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 `);
-      sceneThreeLocked = false;
-      break;
-    } else if (userCommand === "1") {
-      console.log(`
+        sceneThreeLocked = false;
+        break;
+      } else if (userCommand === "1")
+        console.log(`
 You make your way to the elevator but the door is jammed. There is a two inch
 gap, but your attempts to pry it open with your fingers are in vain. You need 
 some leverage... You head back down the Main Corridor towards the other rooms.
-`);
-    } else if (userCommand === "2") {
-      sceneFour.roomLooper();
-    } else if (userCommand === "3" && inventory.includes("glow stick")) {
-      sceneFive.roomLooper();
-    } else if (userCommand === "3") {
-      console.log(`
-You open the door the the Supply Room but it is pitch black. You reach over and
-flick the light switch on. Nothing happens... There is no way you can look for 
-supplies her without a light source. You head back to the Main Corridor.
-      `);
-    }
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+`);
+      sceneThreeLocked = false;
+      mainCorridorLoop();
+    }
+  }
+
+  //function giving user the opportunity to eat or to pick up an item
+  async function messHallLoop() {
+    sceneFourLocked = true;
+    sceneFour.roomLooper();
     userCommand = await ask("\nChoose an option >_");
+    while (sceneFourLocked) {
+      if (userCommand === "1") {
+        console.log(`
+You grab the sandwich and it's still in pretty good shape! You ignore the alarm's warnings and 
+continue to eat. Your ravenous appetite is not satisfied and you continue to look for more 
+satisfying sources of food. You loose track of time, the engines of the Iron Comet fail completely
+and you plunge into a large piece of space debree. The wall of the Mess Hall is breeched and you are 
+sucked into the vaccum of space! GAME OVER!!!
+      `);
+        restartGame();
+        break;
+      } else if (userCommand === "2") {
+        console.log(`
+Unsure if all this was worth your time, you take the glow stick and head back into the Main Corridor.
+But not before grabbing that sandwich.
+      `);
+        inventory.push(this.moveableItem);
+        sceneFourLocked = false;
+        mainCorridorLoop();
+      } else {
+        console.log(
+          "That is not a valid command. Please choose one of the numbered options"
+        );
+      }
+      userCommand = await ask("\nChoose an option >_");
+    }
   }
 }
+//     } else if (userCommand === "2") {
+//       sceneFour.roomLooper();
+//     } else if (userCommand === "3" && inventory.includes("glow stick")) {
+//       sceneFive.roomLooper();
+//     } else if (userCommand === "3") {
+//       console.log(`
+// You open the door the the Supply Room but it is pitch black. You reach over and
+// flick the light switch on. Nothing happens... There is no way you can look for
+// supplies her without a light source. You head back to the Main Corridor.
+//       `);
+//     }
 
 //allows user to exit game at any
 // if (userCommand === "exit") {

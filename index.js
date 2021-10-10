@@ -11,12 +11,13 @@ function ask(questionText) {
   });
 }
 
-//global variable declarations
+//global variable declarations for spaceEscape function
 const colors = require("colors");
 let userCommand;
 let inventory = ["you currently have nothing in your inventory"];
 let elevatorOpen = false;
 
+//function giving the player ability to restart game after dying
 async function restartGame() {
   console.log("\nWould you like to play again?\n".cyan);
   let playAgain = await ask(
@@ -30,12 +31,13 @@ async function restartGame() {
   }
 }
 
+//function giving player ability to quit at any point in the game
 function quitGame() {
-  console.log("\nThank you for playing!\n".green);
+  console.log("\nThank you for playing!\n".green.bold);
   process.exit();
 }
 
-//class constructor for each scene
+//class constructor for each scene in the spaceEscape function
 class Scene {
   constructor(
     scene,
@@ -59,6 +61,7 @@ class Scene {
     this.roomInventory = roomInventory || "";
   }
 
+  //function that console logs current room description, lists location, and all available room options
   async roomLooper() {
     console.log(`${this.desc}`.green);
     console.log(`[ You are currently in ${this.location} ]`.yellow.bold);
@@ -197,13 +200,12 @@ information, how much money would be given to a cat? Choose your answer wisely..
   "You think the answer is $18"
 );
 
+//main function for the game spaceEscape
 spaceEscape();
 
 async function spaceEscape() {
   //variable declarations for spaceEscape
-
   let inBridge = true;
-
   let sceneOneLocked = true;
   let sceneTwoLocked = true;
   let sceneThreeLocked = true;
@@ -254,6 +256,7 @@ What the heck is going on around here?...
 
   console.log(intro);
 
+  //function that loops while the player is in location "The Bridge"
   sceneOne.roomLooper();
   userCommand = await ask("\nChoose an option >_".grey.bold);
 
@@ -300,7 +303,7 @@ Your current inventory is: ${inventory}
     userCommand = await ask("\nChoose an option >_".grey.bold);
   }
 
-  //beginning of scene two
+  //function that loops while the player is in location "The Bridge Exit"
   sceneTwo.roomLooper();
   userCommand = await ask("\nChoose an option >_".grey.bold);
 
@@ -388,6 +391,7 @@ supplies her without a light source. You head back to the Main Corridor.
       userCommand = await ask("\nChoose an option >_".grey.bold);
     }
   }
+
   //function determining whether player has credentials to enter elevator or not
   async function elevatorLoop() {
     sceneThreeLocked = true;
@@ -597,6 +601,8 @@ navagation locked onto your home planet, you are now ready to embark...
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   `.yellow
   );
+
+  //function that loops while the player is in location "Escape Pod". Player must solve riddle correctly to win
   async function escapePodLoop() {
     sceneSevenLocked = true;
     sceneSeven.roomLooper();

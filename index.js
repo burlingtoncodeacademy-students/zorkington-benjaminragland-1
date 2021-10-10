@@ -80,6 +80,7 @@ class Scene {
   }
 }
 
+//declarations of the children of Scene class.
 let sceneOne = new Scene(
   "sceneOne",
   "The Bridge",
@@ -145,6 +146,22 @@ decision to eat for strength or to heed the urgency of finding the escape pod.
   "glow stick"
 );
 
+let sceneFive = new Scene(
+  "sceneFive",
+  "Supply Room",
+  `
+You enter the darkness of the Supply Room. You are happy you decided to grab that 
+random glow stick on the floor of the Mess Hall. You crack it and it's green light
+casts a glow across the room. There is a lot less in here than you thought. Mostly 
+large jugs of water and a crow bar leaning in the corner of the room...
+  `,
+  "Take the jug of water",
+  "Take the crow bar",
+  "Leave and head back to the Main Corridor",
+  "crow bar",
+  "jug of water"
+);
+
 spaceEscape();
 
 async function spaceEscape() {
@@ -156,6 +173,7 @@ async function spaceEscape() {
   let sceneTwoLocked = true;
   let sceneThreeLocked = true;
   let sceneFourLocked = true;
+  let sceneFiveLocked = true;
 
   const welcomeMessage = `
 Welcome to Space Escape. The text based adventure 
@@ -284,7 +302,18 @@ Your current inventory is: ${inventory}
       elevatorLoop();
     } else if (userCommand === "2") {
       messHallLoop();
+    } else if (userCommand === "3") {
+      supplyRoomLoop();
+    } else if (userCommand.toLowerCase() === "i") {
+      console.log(`
+Your current inventory is: ${inventory}
+`);
+    } else {
+      console.log(
+        "That is not a valid command. Please choose one of the numbered options"
+      );
     }
+    userCommand = await ask("\nChoose an option >_");
   }
 
   //function determining whether player has credentials to enter elevator or not
@@ -317,7 +346,7 @@ some leverage... You head back down the Main Corridor towards the other rooms.
     }
   }
 
-  //function giving user the opportunity to eat or to pick up an item
+  //function giving user the opportunity to eat or to pick up an item in the mess hall
   async function messHallLoop() {
     sceneFourLocked = true;
     sceneFour.roomLooper();
@@ -338,15 +367,58 @@ sucked into the vaccum of space! GAME OVER!!!
 Unsure if all this was worth your time, you take the glow stick and head back into the Main Corridor.
 But not before grabbing that sandwich.
       `);
-        inventory.push(this.moveableItem);
+        inventory.push(sceneFour.moveableItem);
+        console.log(`
+"You picked up the ${sceneFour.moveableItem}"
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+`);
         sceneFourLocked = false;
         mainCorridorLoop();
+      } else if (userCommand.toLowerCase() === "i") {
+        console.log(`
+Your current inventory is: ${inventory}
+`);
       } else {
         console.log(
           "That is not a valid command. Please choose one of the numbered options"
         );
       }
       userCommand = await ask("\nChoose an option >_");
+    }
+  }
+
+  //function giving the user opportunity to pick up crow bar if they already have the glow stick
+  async function supplyRoomLoop() {
+    sceneFiveLocked = true;
+    sceneFive.roomLooper();
+    userCommand = await ask("\nChoose an option >_");
+
+    while (sceneFiveLocked) {
+      if (userCommand === "1") {
+        console.log(`
+Did I mention that these "jugs" of water were in 50 gallon drums? There is no way this is coming
+with you. You leave it behind.
+        `);
+      } else if (userCommand === "2") {
+        console.log(`
+You grab the crowbar. It's cool steel feels good in the hand. You hope it will come in handy down 
+the road. It's on the larger side of the crowbar range and is actually pretty heavy. You head back
+to the Main Corridor.       
+`);
+        inventory.push(sceneFive.moveableItem);
+        console.log(`
+"You picked up the ${sceneFive.moveableItem}"
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+`);
+        sceneFiveLocked = false;
+        mainCorridorLoop();
+      } else if (userCommand.toLowerCase() === "i") {
+        console.log(`
+Your current inventory is: ${inventory}
+`);
+      }
     }
   }
 }

@@ -73,20 +73,6 @@ class Scene {
       console.log(`4) Pick up ${this.roomInventory}`);
     }
   }
-
-  //***need to finish functionality of this function. currently does not drop or push item
-  async drop() {
-    if (inventory.includes("you currently have nothing in your inventory")) {
-      return console.log("You have nothing to drop");
-    } else {
-      let count = 1;
-      inventory.map(function (item) {
-        console.log(`${count}) ${item}`);
-        count++;
-      });
-      let dropItem = await ask("What would your like to drop?");
-    }
-  }
 }
 
 //declarations of the children of Scene class. Each numbered scene is a different section in the progression of the story

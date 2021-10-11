@@ -15,11 +15,10 @@ function ask(questionText) {
 const colors = require("colors");
 let userCommand;
 let inventory = ["you currently have nothing in your inventory"];
-let elevatorOpen = false;
 
 //function giving the player ability to restart game after dying
 async function restartGame() {
-  console.log("\nWould you like to play again?\n".cyan);
+  console.log("\nWould you like to play again?\n".brightCyan);
   let playAgain = await ask(
     "Press Y to restart, or any other key to exit the game >_".grey.bold
   );
@@ -33,7 +32,7 @@ async function restartGame() {
 
 //function giving player ability to quit at any point in the game
 function quitGame() {
-  console.log("\nThank you for playing!\n".green.bold);
+  console.log("\nThank you for playing!\n".brightGreen.bold);
   process.exit();
 }
 
@@ -63,9 +62,9 @@ class Scene {
 
   //function that console logs current room description, lists location, and all available room options
   async roomLooper() {
-    console.log(`${this.desc}`.green);
-    console.log(`[ You are currently in ${this.location} ]`.yellow.bold);
-    console.log("\nWhat would you like to do?\n".cyan);
+    console.log(`${this.desc}`.brightGreen);
+    console.log(`[ You are currently in ${this.location} ]`.brightYellow.bold);
+    console.log("\nWhat would you like to do?\n".brightCyan);
     console.log(`1) ${this.option1}`.brightBlue);
     console.log(`2) ${this.option2}`.brightBlue);
     console.log(`3) ${this.option3}`.brightBlue);
@@ -118,9 +117,9 @@ It reads as follows...
 and everyone bought one movie ticket each. How many tickets did they buy in total?"
 Push your answer into the keypad to continue. Think well and choose wisely...
 `,
-  "Push #3 into the keypad",
-  "Push #4 into the keypad",
-  "Push #5 into the keypad"
+  'Push "3 tickets" into the keypad',
+  'Push "4 tickets" into the keypad',
+  'Push "5 tickets" into the keypad'
 );
 
 let sceneThree = new Scene(
@@ -221,7 +220,7 @@ game which only ends two ways... You escaping your
 beloved but damaged ship, or succumbing to an untimely 
 death in the cold void of space... Good luck! 
 
-  `.green;
+  `.brightGreen;
 
   console.log(welcomeMessage);
   let answer = await ask("Press any key to continue >_".grey.bold);
@@ -232,8 +231,6 @@ Before we begin please take note of the following:
 1) If at any point in the game you would like to quit, type "exit"
 
 2) If at any point you would like to view your current inventory, type "i"
-
-3) To drop an item from your inventory, type "drop"
 
 Thanks for reading! Happy adventuring! 
   `.brightBlue;
@@ -252,7 +249,7 @@ escape pod." You have no recollection of how this happened.
 What the heck is going on around here?...
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  `.yellow;
+  `.brightYellow;
 
   console.log(intro);
 
@@ -269,7 +266,7 @@ What the heck is going on around here?...
 [ "You picked up the ${sceneOne.moveableItem}" ]
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-`.yellow
+`.brightMagenta
       );
       sceneOneLocked = false;
       break;
@@ -286,7 +283,7 @@ the ship. At least you died quickly.... GAME OVER!`.red
     } else if (userCommand === "3") {
       console.log(
         "\nAs sad as it is to leave a comrade behind,\nhe is too heavy to carry out the door."
-          .yellow
+          .brightYellow
       );
     } else if (userCommand.toLowerCase() === "i") {
       console.log(`
@@ -318,7 +315,7 @@ and the door grinds to a halt forbidding return entry.
 The alarm continues to sound...
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  `.yellow
+  `.brightYellow
       );
       sceneTwoLocked = false;
       mainCorridorLoop();
@@ -328,7 +325,7 @@ The alarm continues to sound...
 The indicator light flashes red and the keypad smokes starting a small fire.
 You mash at the the numbers furiously but to no avail. It is broken beyond repair.
 You perish in the blaze of fire that ensues... GAME OVER!
-`.red
+`.brightRed
       );
       restartGame();
     } else if (userCommand === "drop") {
@@ -371,7 +368,7 @@ flick the light switch on. Nothing happens... There is no way you can look for
 supplies her without a light source. You head back to the Main Corridor. 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-`.yellow
+`.brightYellow
         );
         mainCorridorLoop();
       } else if (userCommand.toLowerCase() === "i") {
@@ -407,7 +404,7 @@ slightly missing it's mark but leaving enough room for you to crawl out into
 the Engine Room. Guess you're stuck down here now...
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-`.yellow
+`.brightYellow
         );
         sceneThreeLocked = false;
         engineRoomLoop();
@@ -419,7 +416,7 @@ gap, but your attempts to pry it open with your fingers are in vain. You need
 some leverage... You head back down the Main Corridor towards the other rooms.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-`.yellow
+`.brightYellow
         );
         sceneThreeLocked = false;
         mainCorridorLoop();
@@ -441,7 +438,7 @@ continue to eat. Your ravenous appetite is not satisfied and you continue to loo
 satisfying sources of food. You loose track of time, the engines of the Iron Comet fail completely
 and you plunge into a large piece of space debree. The wall of the Mess Hall is breeched and you are 
 sucked into the vaccum of space! GAME OVER!!!
-`.red
+`.brightRed
         );
         restartGame();
         break;
@@ -450,7 +447,7 @@ sucked into the vaccum of space! GAME OVER!!!
           `
 Unsure if all this was worth your time, you take the glow stick and head back into the Main Corridor.
 But not before grabbing that sandwich...
-`.yellow
+`.brightYellow
         );
         inventory.push(sceneFour.moveableItem);
         console.log(
@@ -458,7 +455,7 @@ But not before grabbing that sandwich...
 [ "You picked up the ${sceneFour.moveableItem}" ]
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-`.yellow
+`.brightMagenta
         );
         sceneFourLocked = false;
         mainCorridorLoop();
@@ -495,7 +492,7 @@ But not before grabbing that sandwich...
           `
 Did I mention that these "jugs" of water were in 50 gallon drums? There is no way 
 this is coming with you. You leave it behind.
-`.yellow
+`.brightYellow
         );
       } else if (userCommand === "2") {
         console.log(
@@ -511,7 +508,7 @@ to the Main Corridor.
 [ "You picked up the ${sceneFive.moveableItem}" ]
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-`.yellow
+`.brightMagenta
         );
         sceneFiveLocked = false;
         mainCorridorLoop();
@@ -547,11 +544,11 @@ Your current inventory is: ${inventory}
         console.log(
           `
 Overcome with the guilt of leaving the Iron Comet behind to become another piece of 
-space junk you attempt to fix the engine. This is a foolish attempt as you know 
+space junk, you attempt to fix the engine. This is a foolish attempt as you know 
 absolutely nothing about Matter-Antimatter Warp Drives! Your reckeless wrenching 
 causes a complete failure resulting in an explosion that kills both you and the 
 Iron Comet! GAME OVER!!!
-        `.red
+        `.brightRed
         );
         restartGame();
       } else if (userCommand === "2") {
@@ -562,7 +559,7 @@ escape pods. You are glad you grabbed the key card off of the pilot's neck as
 it is the only way to continue on. You swipe the card and enter the airlock...
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-`.yellow
+`.brightYellow
         );
         sceneSixLocked = false;
         escapePodLoop();
@@ -578,7 +575,7 @@ Your current inventory is: ${inventory}
 Seriously?!?!? Why on Earth, or in Space, would you think you could fit a 
 Matter-Antimatter Warp Drive into your escape pod?!? Much less lift it!
 You feel silly as you scrap that idea...       
-`.yellow
+`.brightYellow
         );
       } else if (userCommand.toLowerCase() === "exit") {
         quitGame();
@@ -599,7 +596,7 @@ You strap yourself into the seat and prepare the pod for launch. With your
 navagation locked onto your home planet, you are now ready to embark...
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  `.yellow
+  `.brightYellow
   );
 
   //function that loops while the player is in location "Escape Pod". Player must solve riddle correctly to win
@@ -618,7 +615,7 @@ the launch button. An ear deafening buzzer sounds and a voice comes over the int
 You bang on the exit as the voice continues to countdown to zero. The explosion that 
 obliterates you and the pod is quick and painless. A shame you made it this far only to
 be killed by a riddle... GAME OVER!!!
-`.red
+`.brightRed
         );
         restartGame();
       } else if (userCommand === "3") {
@@ -627,7 +624,9 @@ be killed by a riddle... GAME OVER!!!
 You think hard about the riddle, make your choice, punch it into the keypad, and press
 the launch button. The launce sequence initiates and you rumble away from the ship 
 towards your home planet. You have strong emotions about the loss of your trusty ship,
-but are truly relieved to be alive. You Win!!! Thank you for playing Space Escape!
+but are truly relieved to be alive. You Win!!! 
+
+Thank you for playing Space Escape!
 `.magenta
         );
         restartGame();
